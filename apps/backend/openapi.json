@@ -1,0 +1,1969 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "مدرسه هوشمند آینده (AI-Powered Smart School API)",
+    "description": "پلتفرم یکپارچه آموزش هوشمند، ارزیابی پارامتریک و تصحیح هوشمند برگه‌های امتحانی",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Get Health",
+        "description": "Service health check endpoint.",
+        "operationId": "get_health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dashboard/teacher": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Get Teacher Dashboard",
+        "description": "Teacher-scoped dashboard: returns class-level metrics and review queues.",
+        "operationId": "get_teacher_dashboard_api_v1_dashboard_teacher_get",
+        "parameters": [
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "teacher",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeacherDashboardResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dashboard/principal": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Get Principal Dashboard",
+        "description": "Principal-scoped dashboard: school-wide aggregate KPIs and analytics.",
+        "operationId": "get_principal_dashboard_api_v1_dashboard_principal_get",
+        "parameters": [
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "teacher",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrincipalDashboardResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dashboard/student": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Get Student Dashboard",
+        "description": "Student dashboard: individual performance, Taraz interval, and study progress.",
+        "operationId": "get_student_dashboard_api_v1_dashboard_student_get",
+        "parameters": [
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "teacher",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentDashboardResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/counselor/overview": {
+      "get": {
+        "tags": [
+          "Counselor & EWS"
+        ],
+        "summary": "Get Counselor Overview",
+        "description": "Returns counselor EWS portal overview metrics and SHAP feature attribution.\nGated behind counselor/principal RBAC.",
+        "operationId": "get_counselor_overview_api_v1_counselor_overview_get",
+        "parameters": [
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "teacher",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CounselorOverviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/counselor/students/at-risk": {
+      "get": {
+        "tags": [
+          "Counselor & EWS"
+        ],
+        "summary": "Get At Risk Students",
+        "description": "Returns prioritized at-risk student queue.",
+        "operationId": "get_at_risk_students_api_v1_counselor_students_at_risk_get",
+        "parameters": [
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "teacher",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AtRiskStudentItem"
+                  },
+                  "title": "Response Get At Risk Students Api V1 Counselor Students At Risk Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/counselor/outreach/approve": {
+      "post": {
+        "tags": [
+          "Counselor & EWS"
+        ],
+        "summary": "Approve Human Outreach",
+        "description": "Human-in-the-loop approval gate: logs the counselor's explicit sign-off.\nNever sends automated messages without human confirmation.",
+        "operationId": "approve_human_outreach_api_v1_counselor_outreach_approve_post",
+        "parameters": [
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "teacher",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OutreachApprovalRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/studio/questions/validate": {
+      "post": {
+        "tags": [
+          "Parametric Studio"
+        ],
+        "summary": "Validate Question",
+        "description": "Validates a parametric mathematical template against safe subset and symbolic constraints.\nRejects unsafe python patterns, attribute access, and unknown symbols.",
+        "operationId": "validate_question_api_v1_studio_questions_validate_post",
+        "parameters": [
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "teacher",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuestionValidationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionValidationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/studio/questions/generate-variants": {
+      "post": {
+        "tags": [
+          "Parametric Studio"
+        ],
+        "summary": "Generate Variants",
+        "description": "Generates N deterministic, symbolically verified question variants with answer keys.",
+        "operationId": "generate_variants_api_v1_studio_questions_generate_variants_post",
+        "parameters": [
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "teacher",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateVariantsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateVariantsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/integrity/signals": {
+      "get": {
+        "tags": [
+          "Integrity & Clustering"
+        ],
+        "summary": "Get Integrity Signals",
+        "description": "Returns graph similarity radar nodes and edges with distinct stroke pattern hints.\nAlways includes the mandatory non-verdict disclaimer.",
+        "operationId": "get_integrity_signals_api_v1_integrity_signals_get",
+        "parameters": [
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "teacher",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntegritySignalsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assessments/{assessment_id}/clusters": {
+      "get": {
+        "tags": [
+          "Integrity & Clustering"
+        ],
+        "summary": "Get Assessment Clusters",
+        "description": "Returns AST isomorphic answer clusters for batch grading.",
+        "operationId": "get_assessment_clusters_api_v1_assessments__assessment_id__clusters_get",
+        "parameters": [
+          {
+            "name": "assessment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Assessment Id"
+            }
+          },
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "teacher",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AnswerClusterSchema"
+                  },
+                  "title": "Response Get Assessment Clusters Api V1 Assessments  Assessment Id  Clusters Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assessments/{assessment_id}/clusters/batch-score": {
+      "post": {
+        "tags": [
+          "Integrity & Clustering"
+        ],
+        "summary": "Apply Batch Score",
+        "description": "Applies score to all students within a cluster and logs an audit record.",
+        "operationId": "apply_batch_score_api_v1_assessments__assessment_id__clusters_batch_score_post",
+        "parameters": [
+          {
+            "name": "assessment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Assessment Id"
+            }
+          },
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "teacher",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchScoreRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/audio/lessons/{lesson_id}": {
+      "get": {
+        "tags": [
+          "Audio Classroom"
+        ],
+        "summary": "Get Audio Lesson",
+        "description": "Returns audio lesson waveform peaks and synchronized notes/topics.",
+        "operationId": "get_audio_lesson_api_v1_audio_lessons__lesson_id__get",
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Lesson Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AudioLessonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/regrades": {
+      "post": {
+        "tags": [
+          "Regrades"
+        ],
+        "summary": "Submit Regrade Request",
+        "description": "Submits a student appeal for exam regrading. Transitions state machine to 'teacher_review'.\nLogs audit record.",
+        "operationId": "submit_regrade_request_api_v1_regrades_post",
+        "parameters": [
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "teacher",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegradeSubmissionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegradeSubmissionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/audit": {
+      "get": {
+        "tags": [
+          "Audit Log"
+        ],
+        "summary": "List Audit Logs",
+        "description": "Returns recent system audit events (restricted strictly to counselor and principal roles).",
+        "operationId": "list_audit_logs_api_v1_audit_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "teacher",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuditEntry"
+                  },
+                  "title": "Response List Audit Logs Api V1 Audit Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AnswerClusterSchema": {
+        "properties": {
+          "cluster_id": {
+            "type": "string",
+            "title": "Cluster Id"
+          },
+          "cluster_name": {
+            "type": "string",
+            "title": "Cluster Name"
+          },
+          "representative_answer": {
+            "type": "string",
+            "title": "Representative Answer"
+          },
+          "student_count": {
+            "type": "integer",
+            "title": "Student Count"
+          },
+          "similarity_percent": {
+            "type": "number",
+            "title": "Similarity Percent"
+          },
+          "confidence_score": {
+            "type": "number",
+            "title": "Confidence Score"
+          },
+          "review_required": {
+            "type": "boolean",
+            "title": "Review Required"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cluster_id",
+          "cluster_name",
+          "representative_answer",
+          "student_count",
+          "similarity_percent",
+          "confidence_score",
+          "review_required",
+          "status"
+        ],
+        "title": "AnswerClusterSchema"
+      },
+      "AtRiskStudentItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "grade_and_major": {
+            "type": "string",
+            "title": "Grade And Major"
+          },
+          "risk_score": {
+            "type": "number",
+            "title": "Risk Score"
+          },
+          "priority_label": {
+            "type": "string",
+            "title": "Priority Label"
+          },
+          "status_tone": {
+            "type": "string",
+            "title": "Status Tone"
+          },
+          "dominant_factors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Dominant Factors"
+          },
+          "suggested_action": {
+            "type": "string",
+            "title": "Suggested Action"
+          },
+          "outreach_approved": {
+            "type": "boolean",
+            "title": "Outreach Approved",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "grade_and_major",
+          "risk_score",
+          "priority_label",
+          "status_tone",
+          "dominant_factors",
+          "suggested_action"
+        ],
+        "title": "AtRiskStudentItem"
+      },
+      "AudioLessonResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "course_title": {
+            "type": "string",
+            "title": "Course Title"
+          },
+          "session_title": {
+            "type": "string",
+            "title": "Session Title"
+          },
+          "total_duration_seconds": {
+            "type": "integer",
+            "title": "Total Duration Seconds"
+          },
+          "current_playback_seconds": {
+            "type": "integer",
+            "title": "Current Playback Seconds"
+          },
+          "waveform_peaks": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Waveform Peaks"
+          },
+          "topics": {
+            "items": {
+              "$ref": "#/components/schemas/AudioTopicSchema"
+            },
+            "type": "array",
+            "title": "Topics"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "course_title",
+          "session_title",
+          "total_duration_seconds",
+          "current_playback_seconds",
+          "waveform_peaks",
+          "topics"
+        ],
+        "title": "AudioLessonResponse"
+      },
+      "AudioTopicSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "timestamp_seconds": {
+            "type": "integer",
+            "title": "Timestamp Seconds"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "timestamp_seconds",
+          "title",
+          "summary"
+        ],
+        "title": "AudioTopicSchema"
+      },
+      "AuditEntry": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "actor_role": {
+            "type": "string",
+            "title": "Actor Role"
+          },
+          "target_student_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Student Id"
+          },
+          "target_student_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Student Name"
+          },
+          "purpose": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Purpose"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Details"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "action",
+          "actor_role"
+        ],
+        "title": "AuditEntry"
+      },
+      "BatchScoreRequest": {
+        "properties": {
+          "cluster_id": {
+            "type": "string",
+            "title": "Cluster Id"
+          },
+          "score": {
+            "type": "number",
+            "maximum": 20.0,
+            "minimum": 0.0,
+            "title": "Score"
+          },
+          "rubric_override_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rubric Override Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cluster_id",
+          "score"
+        ],
+        "title": "BatchScoreRequest"
+      },
+      "CounselorOverviewResponse": {
+        "properties": {
+          "metrics": {
+            "items": {
+              "$ref": "#/components/schemas/KpiMetricItem"
+            },
+            "type": "array",
+            "title": "Metrics"
+          },
+          "progress_series": {
+            "items": {
+              "$ref": "#/components/schemas/ProgressSeriesPoint"
+            },
+            "type": "array",
+            "title": "Progress Series"
+          },
+          "shap_features": {
+            "items": {
+              "$ref": "#/components/schemas/ShapFeatureItem"
+            },
+            "type": "array",
+            "title": "Shap Features"
+          },
+          "total_at_risk_count": {
+            "type": "integer",
+            "title": "Total At Risk Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "metrics",
+          "progress_series",
+          "shap_features",
+          "total_at_risk_count"
+        ],
+        "title": "CounselorOverviewResponse"
+      },
+      "GenerateVariantsRequest": {
+        "properties": {
+          "template_expression": {
+            "type": "string",
+            "maxLength": 150,
+            "title": "Template Expression"
+          },
+          "parameters": {
+            "items": {
+              "$ref": "#/components/schemas/ParameterSpecSchema"
+            },
+            "type": "array",
+            "title": "Parameters"
+          },
+          "variant_count": {
+            "type": "integer",
+            "maximum": 50.0,
+            "minimum": 1.0,
+            "title": "Variant Count",
+            "default": 5
+          }
+        },
+        "type": "object",
+        "required": [
+          "template_expression",
+          "parameters"
+        ],
+        "title": "GenerateVariantsRequest"
+      },
+      "GenerateVariantsResponse": {
+        "properties": {
+          "variants": {
+            "items": {
+              "$ref": "#/components/schemas/VariantItemSchema"
+            },
+            "type": "array",
+            "title": "Variants"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "difficulty_parity_verified": {
+            "type": "boolean",
+            "title": "Difficulty Parity Verified",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "variants",
+          "count"
+        ],
+        "title": "GenerateVariantsResponse"
+      },
+      "GradeBucketItem": {
+        "properties": {
+          "range_label": {
+            "type": "string",
+            "title": "Range Label"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "percent": {
+            "type": "number",
+            "title": "Percent"
+          },
+          "highlighted": {
+            "type": "boolean",
+            "title": "Highlighted",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "range_label",
+          "count",
+          "percent"
+        ],
+        "title": "GradeBucketItem"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "ok"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version",
+            "default": "1.0.0"
+          },
+          "service": {
+            "type": "string",
+            "title": "Service",
+            "default": "smart-school-backend"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp",
+            "default": "2026-10-30T11:23:00Z"
+          }
+        },
+        "type": "object",
+        "title": "HealthResponse"
+      },
+      "IntegrityEdgeSchema": {
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "title": "Source Id"
+          },
+          "target_id": {
+            "type": "string",
+            "title": "Target Id"
+          },
+          "similarity_score": {
+            "type": "number",
+            "title": "Similarity Score"
+          },
+          "edge_style": {
+            "type": "string",
+            "title": "Edge Style"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "review_state": {
+            "type": "string",
+            "title": "Review State",
+            "default": "unreviewed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source_id",
+          "target_id",
+          "similarity_score",
+          "edge_style",
+          "reason"
+        ],
+        "title": "IntegrityEdgeSchema"
+      },
+      "IntegrityNodeSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "risk_score": {
+            "type": "number",
+            "title": "Risk Score"
+          },
+          "has_flag": {
+            "type": "boolean",
+            "title": "Has Flag",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "risk_score"
+        ],
+        "title": "IntegrityNodeSchema"
+      },
+      "IntegritySignalsResponse": {
+        "properties": {
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/IntegrityNodeSchema"
+            },
+            "type": "array",
+            "title": "Nodes"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/IntegrityEdgeSchema"
+            },
+            "type": "array",
+            "title": "Edges"
+          },
+          "non_verdict_disclaimer": {
+            "type": "string",
+            "title": "Non Verdict Disclaimer",
+            "default": "تشابه راه‌حل صرفاً یک سیگنال کمکی برای بررسی دبیر است و به معنای اثبات تخلف نیست."
+          }
+        },
+        "type": "object",
+        "required": [
+          "nodes",
+          "edges"
+        ],
+        "title": "IntegritySignalsResponse"
+      },
+      "KpiMetricItem": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "numeric_value": {
+            "type": "number",
+            "title": "Numeric Value"
+          },
+          "delta_percent": {
+            "type": "number",
+            "title": "Delta Percent"
+          },
+          "is_positive_delta": {
+            "type": "boolean",
+            "title": "Is Positive Delta",
+            "default": true
+          },
+          "is_percent": {
+            "type": "boolean",
+            "title": "Is Percent",
+            "default": false
+          },
+          "is_compact": {
+            "type": "boolean",
+            "title": "Is Compact",
+            "default": false
+          },
+          "tone": {
+            "type": "string",
+            "title": "Tone"
+          },
+          "spark_points": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Spark Points"
+          },
+          "unit_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "numeric_value",
+          "delta_percent",
+          "tone",
+          "spark_points"
+        ],
+        "title": "KpiMetricItem"
+      },
+      "OutreachApprovalRequest": {
+        "properties": {
+          "student_id": {
+            "type": "string",
+            "title": "Student Id"
+          },
+          "counselor_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Counselor Notes"
+          },
+          "custom_message": {
+            "type": "string",
+            "title": "Custom Message"
+          },
+          "confirmed_by_counselor": {
+            "type": "boolean",
+            "title": "Confirmed By Counselor",
+            "description": "Explicit human approval gate"
+          }
+        },
+        "type": "object",
+        "required": [
+          "student_id",
+          "custom_message",
+          "confirmed_by_counselor"
+        ],
+        "title": "OutreachApprovalRequest"
+      },
+      "ParameterSpecSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "min_val": {
+            "type": "number",
+            "title": "Min Val"
+          },
+          "max_val": {
+            "type": "number",
+            "title": "Max Val"
+          },
+          "step": {
+            "type": "number",
+            "title": "Step",
+            "default": 1.0
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "symbol",
+          "label",
+          "min_val",
+          "max_val"
+        ],
+        "title": "ParameterSpecSchema"
+      },
+      "PrincipalDashboardResponse": {
+        "properties": {
+          "scope": {
+            "type": "string",
+            "title": "Scope",
+            "default": "principal"
+          },
+          "principal_name": {
+            "type": "string",
+            "title": "Principal Name"
+          },
+          "role_title": {
+            "type": "string",
+            "title": "Role Title"
+          },
+          "metrics": {
+            "items": {
+              "$ref": "#/components/schemas/KpiMetricItem"
+            },
+            "type": "array",
+            "title": "Metrics"
+          },
+          "progress_series": {
+            "items": {
+              "$ref": "#/components/schemas/ProgressSeriesPoint"
+            },
+            "type": "array",
+            "title": "Progress Series"
+          },
+          "grade_distribution": {
+            "items": {
+              "$ref": "#/components/schemas/GradeBucketItem"
+            },
+            "type": "array",
+            "title": "Grade Distribution"
+          },
+          "suspicious_answers": {
+            "items": {
+              "$ref": "#/components/schemas/SuspiciousAnswerItem"
+            },
+            "type": "array",
+            "title": "Suspicious Answers"
+          },
+          "recent_activities": {
+            "items": {
+              "$ref": "#/components/schemas/RecentActivityItem"
+            },
+            "type": "array",
+            "title": "Recent Activities"
+          }
+        },
+        "type": "object",
+        "required": [
+          "principal_name",
+          "role_title",
+          "metrics",
+          "progress_series",
+          "grade_distribution",
+          "suspicious_answers",
+          "recent_activities"
+        ],
+        "title": "PrincipalDashboardResponse"
+      },
+      "ProgressSeriesPoint": {
+        "properties": {
+          "period": {
+            "type": "string",
+            "title": "Period"
+          },
+          "class_avg": {
+            "type": "number",
+            "title": "Class Avg"
+          },
+          "school_avg": {
+            "type": "number",
+            "title": "School Avg"
+          }
+        },
+        "type": "object",
+        "required": [
+          "period",
+          "class_avg",
+          "school_avg"
+        ],
+        "title": "ProgressSeriesPoint"
+      },
+      "QuestionValidationRequest": {
+        "properties": {
+          "expression": {
+            "type": "string",
+            "maxLength": 150,
+            "title": "Expression",
+            "description": "Mathematical expression using safe subset"
+          },
+          "parameters": {
+            "items": {
+              "$ref": "#/components/schemas/ParameterSpecSchema"
+            },
+            "type": "array",
+            "title": "Parameters"
+          }
+        },
+        "type": "object",
+        "required": [
+          "expression",
+          "parameters"
+        ],
+        "title": "QuestionValidationRequest"
+      },
+      "QuestionValidationResponse": {
+        "properties": {
+          "is_valid": {
+            "type": "boolean",
+            "title": "Is Valid"
+          },
+          "simplified_latex": {
+            "type": "string",
+            "title": "Simplified Latex"
+          },
+          "detected_symbols": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Detected Symbols"
+          },
+          "errors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Errors",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "is_valid",
+          "simplified_latex",
+          "detected_symbols"
+        ],
+        "title": "QuestionValidationResponse"
+      },
+      "RecentActivityItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "time_ago": {
+            "type": "string",
+            "title": "Time Ago"
+          },
+          "status_tone": {
+            "type": "string",
+            "title": "Status Tone"
+          },
+          "icon_type": {
+            "type": "string",
+            "title": "Icon Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "description",
+          "time_ago",
+          "status_tone",
+          "icon_type"
+        ],
+        "title": "RecentActivityItem"
+      },
+      "RegradeSubmissionRequest": {
+        "properties": {
+          "student_id": {
+            "type": "string",
+            "title": "Student Id"
+          },
+          "assessment_id": {
+            "type": "string",
+            "title": "Assessment Id"
+          },
+          "question_number": {
+            "type": "integer",
+            "title": "Question Number"
+          },
+          "claimed_issue": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Claimed Issue"
+          },
+          "student_evidence_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Student Evidence Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "student_id",
+          "assessment_id",
+          "question_number",
+          "claimed_issue"
+        ],
+        "title": "RegradeSubmissionRequest"
+      },
+      "RegradeSubmissionResponse": {
+        "properties": {
+          "regrade_ticket_id": {
+            "type": "string",
+            "title": "Regrade Ticket Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "pending_teacher_review"
+          },
+          "current_stage": {
+            "type": "string",
+            "title": "Current Stage",
+            "default": "teacher_review"
+          },
+          "assigned_reviewer": {
+            "type": "string",
+            "title": "Assigned Reviewer"
+          },
+          "submission_timestamp": {
+            "type": "string",
+            "title": "Submission Timestamp"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "درخواست بازبینی با موفقیت ثبت شد و به کارتابل دبیر ارسال گردید."
+          }
+        },
+        "type": "object",
+        "required": [
+          "regrade_ticket_id",
+          "assigned_reviewer",
+          "submission_timestamp"
+        ],
+        "title": "RegradeSubmissionResponse"
+      },
+      "ShapFeatureItem": {
+        "properties": {
+          "feature_key": {
+            "type": "string",
+            "title": "Feature Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "share_percent": {
+            "type": "number",
+            "title": "Share Percent"
+          },
+          "bar_gradient": {
+            "type": "string",
+            "title": "Bar Gradient"
+          },
+          "direction": {
+            "type": "string",
+            "title": "Direction"
+          }
+        },
+        "type": "object",
+        "required": [
+          "feature_key",
+          "label",
+          "share_percent",
+          "bar_gradient",
+          "direction"
+        ],
+        "title": "ShapFeatureItem"
+      },
+      "StudentDashboardResponse": {
+        "properties": {
+          "scope": {
+            "type": "string",
+            "title": "Scope",
+            "default": "student"
+          },
+          "student_name": {
+            "type": "string",
+            "title": "Student Name"
+          },
+          "taraz_min": {
+            "type": "integer",
+            "title": "Taraz Min"
+          },
+          "taraz_max": {
+            "type": "integer",
+            "title": "Taraz Max"
+          },
+          "taraz_estimate": {
+            "type": "integer",
+            "title": "Taraz Estimate"
+          },
+          "taraz_uncertainty": {
+            "type": "integer",
+            "title": "Taraz Uncertainty"
+          },
+          "metrics": {
+            "items": {
+              "$ref": "#/components/schemas/KpiMetricItem"
+            },
+            "type": "array",
+            "title": "Metrics"
+          },
+          "recent_activities": {
+            "items": {
+              "$ref": "#/components/schemas/RecentActivityItem"
+            },
+            "type": "array",
+            "title": "Recent Activities"
+          }
+        },
+        "type": "object",
+        "required": [
+          "student_name",
+          "taraz_min",
+          "taraz_max",
+          "taraz_estimate",
+          "taraz_uncertainty",
+          "metrics",
+          "recent_activities"
+        ],
+        "title": "StudentDashboardResponse"
+      },
+      "SuspiciousAnswerItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "student_name": {
+            "type": "string",
+            "title": "Student Name"
+          },
+          "similarity_score": {
+            "type": "number",
+            "title": "Similarity Score"
+          },
+          "matched_student_name": {
+            "type": "string",
+            "title": "Matched Student Name"
+          },
+          "matched_question_title": {
+            "type": "string",
+            "title": "Matched Question Title"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "student_name",
+          "similarity_score",
+          "matched_student_name",
+          "matched_question_title",
+          "status"
+        ],
+        "title": "SuspiciousAnswerItem"
+      },
+      "TeacherDashboardResponse": {
+        "properties": {
+          "scope": {
+            "type": "string",
+            "title": "Scope",
+            "default": "teacher"
+          },
+          "teacher_name": {
+            "type": "string",
+            "title": "Teacher Name"
+          },
+          "role_title": {
+            "type": "string",
+            "title": "Role Title"
+          },
+          "metrics": {
+            "items": {
+              "$ref": "#/components/schemas/KpiMetricItem"
+            },
+            "type": "array",
+            "title": "Metrics"
+          },
+          "progress_series": {
+            "items": {
+              "$ref": "#/components/schemas/ProgressSeriesPoint"
+            },
+            "type": "array",
+            "title": "Progress Series"
+          },
+          "grade_distribution": {
+            "items": {
+              "$ref": "#/components/schemas/GradeBucketItem"
+            },
+            "type": "array",
+            "title": "Grade Distribution"
+          },
+          "suspicious_answers": {
+            "items": {
+              "$ref": "#/components/schemas/SuspiciousAnswerItem"
+            },
+            "type": "array",
+            "title": "Suspicious Answers"
+          },
+          "recent_activities": {
+            "items": {
+              "$ref": "#/components/schemas/RecentActivityItem"
+            },
+            "type": "array",
+            "title": "Recent Activities"
+          }
+        },
+        "type": "object",
+        "required": [
+          "teacher_name",
+          "role_title",
+          "metrics",
+          "progress_series",
+          "grade_distribution",
+          "suspicious_answers",
+          "recent_activities"
+        ],
+        "title": "TeacherDashboardResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VariantItemSchema": {
+        "properties": {
+          "variant_id": {
+            "type": "string",
+            "title": "Variant Id"
+          },
+          "variable_assignments": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Variable Assignments"
+          },
+          "evaluated_answer": {
+            "type": "string",
+            "title": "Evaluated Answer"
+          },
+          "latex_rendered": {
+            "type": "string",
+            "title": "Latex Rendered"
+          },
+          "is_valid": {
+            "type": "boolean",
+            "title": "Is Valid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "variant_id",
+          "variable_assignments",
+          "evaluated_answer",
+          "latex_rendered",
+          "is_valid"
+        ],
+        "title": "VariantItemSchema"
+      }
+    }
+  }
+}
