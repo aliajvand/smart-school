@@ -54,7 +54,7 @@ export interface RecentActivityItem {
   title: string;
   description: string;
   timeAgo: string;
-  statusTone: 'emerald' | 'amber' | 'violet' | 'coral' | 'cyan';
+  statusTone: 'emerald' | 'amber' | 'violet' | 'coral' | 'cyan' | 'indigo';
   iconType: 'check' | 'alert' | 'document' | 'user' | 'sparkles';
 }
 
