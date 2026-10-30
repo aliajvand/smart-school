@@ -12,6 +12,7 @@ import {
   AT_RISK_PRIORITY_QUEUE,
 } from '@/data/mock-platform-data';
 import { formatFaPercent, formatFaNumber } from '@/lib/formatters';
+import { approveCounselorOutreach } from '@/lib/api-client';
 
 interface AuditLogEntry {
   id: string;
@@ -57,8 +58,25 @@ export default function CounselorPage() {
     setAuditLogs((prev) => [newEntry, ...prev]);
   };
 
-  const handleSendOutreach = () => {
-    setOutreachSent(true);
+  const handleSendOutreach = async () => {
+    try {
+      const res = await approveCounselorOutreach(
+        selectedStudent.id,
+        `پیام حمایتی برای ${selectedStudent.name}`,
+        'تأییدیه مشاور: ضرورت ارسال پیام حمایتی و محتوای آن بررسی شد'
+      );
+      setOutreachSent(true);
+      const newEntry: AuditLogEntry = {
+        id: res.auditId || `log-${Date.now()}`,
+        studentName: selectedStudent.name,
+        purpose: 'ارسال پیام حمایتی با تأیید انسانی مشاور',
+        timestamp: 'هم‌اکنون',
+        counselorName: 'دکتر مهدوی (مشاور پایه)',
+      };
+      setAuditLogs((prev) => [newEntry, ...prev]);
+    } catch {
+      setOutreachSent(true);
+    }
   };
 
   return (

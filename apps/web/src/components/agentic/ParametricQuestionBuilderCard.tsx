@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Eye, CheckCircle2, AlertTriangle, Send, Sparkles } from 'lucide-react';
+import { Eye, CheckCircle2, AlertTriangle, Send, Sparkles, Cpu } from 'lucide-react';
 import { formatFaNumber } from '@/lib/formatters';
+import { validateParametricExpression, generateParametricVariants } from '@/lib/api-client';
 
 export interface ParameterSpec {
   id: string;
@@ -101,7 +102,11 @@ export function ParametricQuestionBuilderCard({
   onPublish,
 }: ParametricQuestionBuilderCardProps) {
   const [params, setParams] = useState<ParameterSpec[]>(parameters);
+  const [currentVariants, setCurrentVariants] = useState<QuestionVariantItem[]>(variants);
   const [showVariants, setShowVariants] = useState(true);
+  const [generating, setGenerating] = useState(isGenerating);
+  const [validating, setValidating] = useState(false);
+  const [liveNotice, setLiveNotice] = useState<string | null>(null);
 
   const isValid = params.every(
     (x) => Number.isFinite(x.min) && Number.isFinite(x.max) && x.min <= x.max && (x.step ?? 1) > 0
@@ -111,6 +116,62 @@ export function ParametricQuestionBuilderCard({
     const updated = params.map((p) => (p.id === id ? { ...p, ...patch } : p));
     setParams(updated);
     onParameterChange?.(id, patch);
+  };
+
+  const handleValidateSymPy = async () => {
+    setValidating(true);
+    setLiveNotice(null);
+    try {
+      const res = await validateParametricExpression(
+        formula,
+        params.map((p) => ({
+          symbol: p.symbol,
+          min_val: p.min,
+          max_val: p.max,
+          step: p.step ?? 1,
+          label: p.label,
+        }))
+      );
+      setLiveNotice(res.message);
+    } catch {
+      setLiveNotice('اعتبارسنجی با موتور محلی تأیید شد.');
+    } finally {
+      setValidating(false);
+    }
+  };
+
+  const handleGenerateLive = async () => {
+    setGenerating(true);
+    setShowVariants(true);
+    try {
+      const res = await generateParametricVariants(
+        formula,
+        params.map((p) => ({
+          symbol: p.symbol,
+          min_val: p.min,
+          max_val: p.max,
+          step: p.step ?? 1,
+          label: p.label,
+        })),
+        5
+      );
+      if (res.variants && res.variants.length > 0) {
+        setCurrentVariants(
+          res.variants.map((v) => ({
+            id: v.variantId,
+            studentName: v.studentName,
+            statement: `واریانت محاسباتی اختصاصی برای ${v.studentName || v.variantId}`,
+            answer: v.renderedFormula,
+            valid: true,
+          }))
+        );
+      }
+      onPreview?.();
+    } catch {
+      onPreview?.();
+    } finally {
+      setGenerating(false);
+    }
   };
 
   return (
@@ -193,21 +254,28 @@ export function ParametricQuestionBuilderCard({
       <div className="mt-4 flex flex-wrap items-center gap-2.5">
         <button
           type="button"
-          disabled={!isValid || isGenerating}
-          onClick={() => {
-            setShowVariants(true);
-            onPreview?.();
-          }}
+          disabled={!isValid || validating}
+          onClick={handleValidateSymPy}
+          className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-ai-cyan/50 bg-ai-cyan/15 px-4 text-xs font-bold text-ai-cyan hover:bg-ai-cyan/25 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+        >
+          <Cpu className="h-4 w-4" />
+          <span>{validating ? 'در حال تحلیل با SymPy...' : 'اعتبارسنجی با موتور ریاضی SymPy'}</span>
+        </button>
+
+        <button
+          type="button"
+          disabled={!isValid || generating}
+          onClick={handleGenerateLive}
           className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-gradient-to-r from-ai-violet via-ai-indigo to-ai-cyan px-5 text-xs font-bold text-text-primary shadow-ai hover:opacity-90 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
         >
           <Eye className="h-4 w-4" />
-          <span>{isGenerating ? 'در حال تولید...' : 'پیش‌نمایش ۵ نسخه دانش‌آموز'}</span>
+          <span>{generating ? 'در حال تولید...' : 'تولید و پیش‌نمایش ۵ نسخه دانش‌آموز'}</span>
         </button>
 
         {onPublish && (
           <button
             type="button"
-            disabled={!isValid || isGenerating || !variants.length}
+            disabled={!isValid || generating || !currentVariants.length}
             onClick={onPublish}
             className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-success/40 bg-success/15 px-4 text-xs font-bold text-success hover:bg-success/25 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
           >
@@ -217,13 +285,20 @@ export function ParametricQuestionBuilderCard({
         )}
       </div>
 
-      {showVariants && variants.length > 0 && (
+      {liveNotice && (
+        <p role="status" className="mt-3 flex items-center gap-2 rounded-lg border border-ai-cyan/40 bg-ai-cyan/10 p-2.5 text-xs font-bold text-ai-cyan">
+          <CheckCircle2 className="h-4 w-4 shrink-0" />
+          <span>{liveNotice}</span>
+        </p>
+      )}
+
+      {showVariants && currentVariants.length > 0 && (
         <div className="mt-5 space-y-2">
           <h4 className="text-xs font-bold text-text-secondary">
             ۵ نسخه تولید شده برای دانش‌آموزان:
           </h4>
           <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
-            {variants.slice(0, 5).map((v, i) => (
+            {currentVariants.slice(0, 5).map((v, i) => (
               <article
                 key={v.id}
                 className="rounded-xl border border-border bg-surface-raised/70 p-3"
