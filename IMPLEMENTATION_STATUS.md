@@ -1,8 +1,8 @@
 # IMPLEMENTATION_STATUS.md
 ## Living Implementation Status: «مدرسه هوشمند آینده»
 
-**Current Milestone:** Milestone 3 Completed (Verified) ➔ Proceeding to Milestone 4 (Flutter Mobile)  
-**Last Updated:** 2026-10-30 12:10 Local Time  
+**Current Milestone:** Milestone 5 Completed (Verified) ➔ Proceeding to Milestone 6 (Security & Privacy Pass) & Milestone 7 (Final Hardening)  
+**Last Updated:** 2026-10-30 12:18 Local Time  
 **Branch:** `resume/integration`  
 **Backup Tag:** `backup/pre-resume-20261030-1050`  
 
@@ -32,29 +32,33 @@
 | **Route: `/studio`** | `VERIFIED` | Prerendered in Next.js 15 build (8.55 kB). Parametric question builder with variable chips (`v₀, θ, g, a, b`), domain validation, 5 student variants, integrity radar network graph with solid/dashed/dotted edges, Gradescope-style answer cluster deck with batch grading + reversible undo. |
 | **Route: `/mobile-preview`** | `VERIFIED` | Prerendered in Next.js 15 build (4.00 kB). Dual-device frame (iPhone 15 Pro, Pixel 8). ArUco camera scanner simulation with 4 corner markers (#0, #1, #2, #3), Laplacian blur meter (84%), perspective correction toggle, Instant AI score (`۹۵ / ۱۰۰`). Classroom audio & pop quiz screen. Clear simulation disclaimer. |
 | **14 Agentic Components** | `VERIFIED` | `AgentStatusPill`, `KPIMetricSparkCard`, `StudentTrendSparkline`, `AIAssistantBentoCard`, `HandwritingEvaluationCanvas`, `SuspiciousAnswersListCard`, `RegradeTimelineStepper`, `StudentProgressAreaChart`, `GradeDistributionBarChart`, `RecentActivitiesTimeline`, `ClassAudioWaveformPlayer`, `ParametricQuestionBuilderCard`, `IntegrityRadarWidget`, `AnswerClusterDeck`. All compile with strict TypeScript, no warnings. |
-| **FastAPI Backend (`apps/backend`)** | `VERIFIED` | 43/43 Pytest tests passed. Running on `http://127.0.0.1:8000`. OpenAPI schema exported to `apps/backend/openapi.json` (17 paths, full Pydantic v2 schemas). |
+| **FastAPI Backend (`apps/backend`)** | `VERIFIED` | 43/43 Pytest tests passed in 1.53s. Running on `http://127.0.0.1:8000`. OpenAPI schema exported to `apps/backend/openapi.json` (17 paths, full Pydantic v2 schemas). |
 | **Web ↔ Backend Integration** | `VERIFIED` | `scripts/verify-web-backend-integration.mjs`: 11/11 live HTTP endpoints verified against running FastAPI backend with real requests, role propagation (`X-Demo-Role`), and graceful mock fallback. 10/10 Vitest tests passed. |
-| **Flutter Mobile: `/apps/mobile`** | `NOT IMPLEMENTED` | Scheduled for Milestone 4 (Flutter 3.47.4 available). |
+| **Flutter Mobile (`apps/mobile`)** | `VERIFIED` | Flutter 3.47.4 / Dart 3.13.3. `flutter analyze` passed with 0 issues in 4.4s. `flutter test` passed 12/12 unit and widget tests (persian formatters, tokens, widget shell tabs, ArUco scanner UI, API client offline fallback). |
+| **Flutter ↔ Backend Integration** | `VERIFIED` | `MobileApiClient` live integration test against running FastAPI backend on `http://127.0.0.1:8000`: live health check, live teacher dashboard, and live parametric question variants (5 variants) verified. |
+| **Android APK Build Toolchain** | `BLOCKED` | Android SDK missing on Windows host per `flutter doctor`: `[X] Unable to locate Android SDK`. Flutter source code, web, and desktop toolchains are 100% complete and verified. |
 
 ---
 
 ### Blockers
-None.
+- **Android APK binary generation**: Blocked by missing Android Studio/Android SDK on the host machine. Source code, tests, analysis, and desktop/web toolchains are fully verified.
 
 ---
 
 ### Decisions
-1. Fixed root `.gitignore` which previously matched `lib/` without prefix, incorrectly ignoring `apps/web/src/lib/` and `apps/mobile/lib/`.
-2. Created `apps/web/src/lib/api-client.ts` with transparent fallback to mock constants upon any network disruption or backend downtime.
-3. Added `apps/web/src/hooks/useBackendStatus.ts` providing 15-second heartbeat probing and displaying dynamic connection pills in `Header.tsx`.
-4. Verified 11/11 live endpoints in `scripts/verify-web-backend-integration.mjs` against the running server.
+1. Fixed root `.gitignore` to prevent erroneous suppression of `apps/web/src/lib/` and `apps/mobile/lib/`.
+2. Created `apps/web/src/lib/api-client.ts` and `apps/mobile/lib/core/api/mobile_api_client.dart` with dual-mode operation: real HTTP against backend, and zero-crash fallback to canonical mock datasets.
+3. Implemented `SchoolTokens` (ThemeExtension) with canonical dark theme (`#070A12` canvas, `#0F172A` surface).
+4. Ensured strict RTL directionality and Persian numerals throughout both Next.js and Flutter screens.
+5. In Counselor EWS, enforced mandatory human counselor approval checkbox before allowing outreach messages to be dispatched.
+6. In Integrity Radar, enforced mandatory non-verdict disclaimer: «تشابه راه‌حل صرفاً یک سیگنال کمکی برای بررسی دبیر است و به معنای اثبات تخلف نیست.»
 
 ---
 
 ### NEXT 3 ACTIONS
-1. **Milestone 4 (Flutter Mobile Structure):** Scaffold `apps/mobile/` with `flutter create --project-name smart_school .`, register `SchoolTokens` (ThemeExtension), bidi text helpers, and `api_client.dart`.
-2. **Milestone 4 Screens:** Implement required mobile screens: `MobileShellScreen`, `ArUcoScannerScreen` (with 4 corner markers, blur meter, instant AI score `۹۵ / ۱۰۰`), `StudentSmartClassroomScreen` (audio player + 5-min pop quiz), `TeacherDashboardMobileScreen`, `CounselorEwsMobileScreen`.
-3. **Milestone 4 Verification:** Run `flutter pub get`, `flutter analyze`, and `flutter test`. Report exact results and status.
+1. **Milestone 6 (Security & Privacy Pass):** Verify CORS policies, AST input sanitization against command injection, rate-limiting considerations, and strict verification that no secrets/credentials are committed.
+2. **Milestone 7 (Final Hardening):** Run complete cross-app verification suite (`npm run gate:m1`, `pytest`, `flutter test`, integration probe).
+3. **Comprehensive Delivery Report:** Write and present the final master delivery report covering all architectural, visual, algorithmic, and verification metrics.
 
 ---
 
@@ -66,12 +70,9 @@ npm --prefix apps/web run gate:m1
 # Backend tests
 python -m pytest -v
 
-# Live integration verification
+# Live web integration verification
 node scripts/verify-web-backend-integration.mjs
 
-# Mobile checks (Milestone 4)
-cd apps/mobile
-flutter pub get
-flutter analyze
-flutter test
+# Mobile checks
+powershell -Command "Set-Location apps/mobile; flutter analyze; flutter test"
 ```
