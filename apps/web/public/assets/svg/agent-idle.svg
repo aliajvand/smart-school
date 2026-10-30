@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img" aria-labelledby="t">
+  <title id="t">دستیار هوشمند — حالت آماده‌به‌کار (Idle)</title>
+  <defs>
+    <linearGradient id="idleG" x1="12" y1="12" x2="84" y2="84" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="55%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+  <circle cx="48" cy="48" r="43" fill="#0F172A" stroke="url(#idleG)" stroke-width="2.5"/>
+  <!-- Cute Cyber Robot Head (matching dashboard mockup) -->
+  <rect x="24" y="26" width="48" height="36" rx="16" fill="#E2E8F0" stroke="#38BDF8" stroke-width="2"/>
+  <rect x="30" y="33" width="36" height="20" rx="9" fill="#070A12"/>
+  <circle cx="40" cy="43" r="4.2" fill="#38BDF8"/>
+  <circle cx="56" cy="43" r="4.2" fill="#38BDF8"/>
+  <path d="M43 55 Q48 58 53 55" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round"/>
+  <path d="M34 66 H62 L66 78 H30 Z" fill="#1E293B" stroke="#4F46E5" stroke-width="1.8" stroke-linejoin="round"/>
+</svg>

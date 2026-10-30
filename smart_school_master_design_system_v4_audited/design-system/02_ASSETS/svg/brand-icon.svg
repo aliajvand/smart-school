@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-labelledby="title desc">
+  <title id="title">مدرسه هوشمند آینده — نشان رسمی</title>
+  <desc id="desc">ترکیب کتاب باز، شبکه عصبی هوش مصنوعی و هاله نوری نئونی</desc>
+  <defs>
+    <linearGradient id="bgGrad" x1="16" y1="12" x2="112" y2="116" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#111C32"/>
+      <stop offset="55%" stop-color="#0B1222"/>
+      <stop offset="100%" stop-color="#070A12"/>
+    </linearGradient>
+    <linearGradient id="auraGrad" x1="18" y1="20" x2="110" y2="108" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="50%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+    <linearGradient id="cyanGlow" x1="64" y1="22" x2="64" y2="98" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#67E8F9"/>
+      <stop offset="100%" stop-color="#4F46E5"/>
+    </linearGradient>
+    <filter id="neonBlur" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <rect x="8" y="8" width="112" height="112" rx="28" fill="url(#bgGrad)" stroke="url(#auraGrad)" stroke-width="2.5"/>
+  <!-- Outer glowing ring -->
+  <circle cx="64" cy="56" r="34" fill="none" stroke="url(#auraGrad)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.65"/>
+  <!-- Neural Brain / Prism Core -->
+  <g filter="url(#neonBlur)">
+    <path d="M64 24 C49 24 38 35 38 49 C38 57 42 63 48 67 L64 78 L80 67 C86 63 90 57 90 49 C90 35 79 24 64 24 Z" fill="#0F172A" stroke="url(#cyanGlow)" stroke-width="2.5"/>
+    <!-- Neural nodes & synaptic links -->
+    <path d="M64 28 V74 M52 38 L64 46 L76 38 M48 52 L64 58 L80 52" fill="none" stroke="#67E8F9" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="64" cy="34" r="3.2" fill="#67E8F9"/>
+    <circle cx="52" cy="38" r="2.8" fill="#A78BFA"/>
+    <circle cx="76" cy="38" r="2.8" fill="#38BDF8"/>
+    <circle cx="48" cy="52" r="2.8" fill="#A78BFA"/>
+    <circle cx="80" cy="52" r="2.8" fill="#38BDF8"/>
+    <circle cx="64" cy="58" r="3.5" fill="#F8FAFC"/>
+  </g>
+  <!-- Open Book Wings -->
+  <path d="M26 70 C38 70 52 75 64 84 C76 75 90 70 102 70 L98 96 C86 95 74 99 64 106 C54 99 42 95 30 96 Z" fill="#111C32" stroke="url(#auraGrad)" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M64 84 V106" stroke="#67E8F9" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M35 80 C45 81 54 84 60 89 M93 80 C83 81 74 84 68 89" fill="none" stroke="#94A3B8" stroke-width="1.6" stroke-linecap="round"/>
+</svg>

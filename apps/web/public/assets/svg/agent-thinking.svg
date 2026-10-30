@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img" aria-labelledby="t">
+  <title id="t">دستیار هوشمند — در حال پردازش و تولید سوالات پارامتریک (Thinking)</title>
+  <defs>
+    <linearGradient id="thinkG" x1="10" y1="10" x2="86" y2="86" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="50%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+  <circle cx="48" cy="48" r="43" fill="#0F172A" stroke="url(#thinkG)" stroke-width="3"/>
+  <!-- Orbiting Quantum Rings -->
+  <ellipse cx="48" cy="48" rx="39" ry="16" fill="none" stroke="#7C3AED" stroke-width="1.6" transform="rotate(-24 48 48)"/>
+  <ellipse cx="48" cy="48" rx="39" ry="16" fill="none" stroke="#06B6D4" stroke-width="1.6" transform="rotate(28 48 48)"/>
+  <!-- Robot Head -->
+  <rect x="26" y="27" width="44" height="34" rx="15" fill="#F8FAFC" stroke="url(#thinkG)" stroke-width="2.2"/>
+  <rect x="32" y="34" width="32" height="18" rx="8" fill="#070A12"/>
+  <circle cx="41" cy="43" r="4" fill="#A78BFA"/>
+  <circle cx="55" cy="43" r="4" fill="#67E8F9"/>
+  <!-- Sparkle Star -->
+  <path d="M74 18 L76 24 L82 26 L76 28 L74 34 L72 28 L66 26 L72 24 Z" fill="#67E8F9"/>
+</svg>
