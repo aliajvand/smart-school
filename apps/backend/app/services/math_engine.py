@@ -141,3 +141,21 @@ def evaluate_parametric_variants(
         })
         
     return variants
+
+
+def validate_equivalence(
+    student_expr_str: str,
+    ground_truth_str: str,
+    allowed_symbols: List[str] = ["x"],
+) -> bool:
+    """
+    Check whether student math expression is mathematically equivalent to the ground truth
+    via SymPy symbolic simplification (sp.simplify(student - truth) == 0).
+    """
+    try:
+        s_expr = safe_parse_math(student_expr_str, allowed_symbols)
+        g_expr = safe_parse_math(ground_truth_str, allowed_symbols)
+        diff = sp.simplify(s_expr - g_expr)
+        return diff == 0
+    except Exception:
+        return False

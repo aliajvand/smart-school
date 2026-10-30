@@ -1,5 +1,5 @@
 /**
- * Integration Verification Script for Milestone 3
+ * Integration Verification Script for Milestone 3 & Production Rollout
  * Tests real HTTP requests between Web Client and Running FastAPI Backend
  */
 
@@ -23,7 +23,7 @@ async function testEndpoint(name, url, options = {}) {
 }
 
 async function run() {
-  console.log(`\n--- Running Milestone 3 Web ↔ Backend Integration Verification ---\nTarget: ${BASE_URL}\n`);
+  console.log(`\n--- Running Web ↔ Backend Integration Verification ---\nTarget: ${BASE_URL}\n`);
   let total = 0;
   let passed = 0;
 
@@ -121,6 +121,27 @@ async function run() {
     headers: { 'X-Demo-Role': 'student' },
   });
   if (regrade.ok && regrade.data.steps.length > 0) passed++;
+
+  // 11. Auth Roles Catalog
+  total++;
+  const rolesInfo = await testEndpoint('Auth Roles Info Catalog', `${BASE_URL}/api/v1/auth/roles-info`);
+  if (rolesInfo.ok && rolesInfo.data.roles.length === 4) passed++;
+
+  // 12. Auth Login (JWT Bearer Verification)
+  total++;
+  const authLogin = await testEndpoint('Auth Login (JWT Bearer Token)', `${BASE_URL}/api/v1/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: 'principal_demo', password: 'principal123' }),
+  });
+  if (authLogin.ok && authLogin.data.access_token && authLogin.data.user.role === 'principal') passed++;
+
+  // 13. Vision & OpenCV Pipeline
+  total++;
+  const visionScan = await testEndpoint('OpenCV ArUco & Laplacian Pipeline', `${BASE_URL}/api/v1/vision/test-synthetic-scan`, {
+    method: 'POST',
+  });
+  if (visionScan.ok && visionScan.data.alignment.all_corners_found && visionScan.data.evaluation.total_score > 0) passed++;
 
   console.log(`\n--- Integration Summary: ${passed}/${total} Live Endpoints Verified ---\n`);
 

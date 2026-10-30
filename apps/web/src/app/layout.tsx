@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { AuthProvider } from '@/context/AuthContext';
 
 export const metadata: Metadata = {
   title: 'مدرسه هوشمند آینده | AI-Powered Smart School',
@@ -14,7 +15,9 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl" className="dark">
       <body className="bg-canvas text-text-primary antialiased min-h-screen selection:bg-ai-violet/30 selection:text-text-primary">
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

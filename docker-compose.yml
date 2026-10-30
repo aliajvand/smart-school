@@ -1,0 +1,51 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: smart_school_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: smart_school
+      POSTGRES_PASSWORD: smart_school_secret_2026
+      POSTGRES_DB: smart_school_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U smart_school -d smart_school_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: smart_school_backend
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://smart_school:smart_school_secret_2026@postgres:5432/smart_school_db
+      JWT_SECRET_KEY: smart-school-super-secret-jwt-key-2026-iran-ai
+      PORT: 8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: smart_school_web
+    restart: always
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+    driver: local

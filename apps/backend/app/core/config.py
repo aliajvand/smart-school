@@ -26,4 +26,12 @@ class Settings(BaseModel):
     MAX_SYMBOLS: int = 8
     MAX_VARIANTS_PER_REQUEST: int = 50
 
+    # Database Configuration (PostgreSQL with SQLite fallback)
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./smart_school.db")
+
+    # JWT Authentication
+    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "smart-school-super-secret-jwt-key-2026-iran-ai")
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days for seamless access
+
 settings = Settings()

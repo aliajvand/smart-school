@@ -53,3 +53,12 @@ htmlcov/
 # OS Files
 .DS_Store
 Thumbs.db
+
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+
+# TypeScript build info
+tsconfig.tsbuildinfo

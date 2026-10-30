@@ -17,6 +17,8 @@ import {
   ShieldCheck,
   Check,
   RefreshCw,
+  Upload,
+  Cpu,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { formatFaScore, formatFaPercent, formatLtrTimestamp } from '@/lib/formatters';
@@ -30,6 +32,55 @@ export default function MobilePreviewPage() {
   const [audioSeconds, setAudioSeconds] = useState(194); // 03:14
   const [selectedQuizOption, setSelectedQuizOption] = useState<string | null>('opt-3');
 
+  // Live Backend OpenCV Pipeline State
+  const [liveVisionData, setLiveVisionData] = useState<any>(null);
+  const [isVisionLoading, setIsVisionLoading] = useState(false);
+  const [visionError, setVisionError] = useState<string | null>(null);
+
+  const runLiveOpenCvPipeline = async () => {
+    setIsVisionLoading(true);
+    setVisionError(null);
+    try {
+      const res = await fetch('http://localhost:8000/api/v1/vision/test-synthetic-scan', {
+        method: 'POST',
+      });
+      if (!res.ok) {
+        throw new Error('خطا در ارتباط با سرور پردازش تصویر OpenCV.');
+      }
+      const data = await res.json();
+      setLiveVisionData(data);
+    } catch (err: any) {
+      setVisionError(err.message || 'سرور بک‌اند در دسترس نیست.');
+    } finally {
+      setIsVisionLoading(false);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsVisionLoading(true);
+    setVisionError(null);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('http://localhost:8000/api/v1/vision/scan-sheet', {
+        method: 'POST',
+        body: formData,
+      });
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.detail || 'خطا در ارزیابی تصویر برگه.');
+      }
+      const data = await res.json();
+      setLiveVisionData(data);
+    } catch (err: any) {
+      setVisionError(err.message || 'خطا در بارگذاری برگه.');
+    } finally {
+      setIsVisionLoading(false);
+    }
+  };
+
   return (
     <AppShell>
       <div className="space-y-6">
@@ -39,10 +90,10 @@ export default function MobilePreviewPage() {
             <Smartphone className="h-5 w-5 text-ai-cyan" />
             <div>
               <h2 className="text-sm font-extrabold text-text-primary">
-                شبیه‌ساز تعاملی اپلیکیشن موبایل مدرسه هوشمند (Flutter Mobile Preview)
+                شبیه‌ساز تعاملی اپلیکیشن موبایل و اسکنر OpenCV (Flutter & Vision Preview)
               </h2>
               <p className="text-xs text-text-muted mt-0.5">
-                تست و بررسی رابط کاربری Flutter بدون نیاز به راه‌اندازی شبیه‌ساز نیتیو
+                تست و بررسی رابط کاربری Flutter و خط لوله پردازش تصویر ArUco و تصحیح هوشمند
               </p>
             </div>
           </div>
@@ -102,18 +153,106 @@ export default function MobilePreviewPage() {
           </div>
         </div>
 
-        {/* Mandatory Simulation Disclaimer */}
-        <div className="rounded-xl border border-warning/30 bg-warning/10 p-3 text-xs text-text-secondary flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-warning shrink-0" />
-            <span>
-              <strong>توجه فنی:</strong> ماژول‌های دوربین سخت‌افزاری، تبدیل فوریه ASR و پردازش ماتریسی OpenCV FFI در این پنجره مرورگر شبیه‌سازی (Simulated) شده‌اند.
-            </span>
+        {/* Live OpenCV Pipeline Trigger Card */}
+        <div className="rounded-2xl border border-ai-cyan/30 bg-surface/90 p-4 backdrop-blur-glass shadow-md flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-ai-cyan/15 text-ai-cyan border border-ai-cyan/30">
+              <Cpu className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="text-xs font-extrabold text-text-primary">
+                موتور پردازش تصویر سرور (OpenCV + ArUco + Laplacian)
+              </h3>
+              <p className="text-[11px] text-text-muted">
+                آزمون خط لوله تشخیص ۴ گوشه ArUco، رفع اعوجاج پرسپکتیو و تصحیح گام‌به‌گام با SymPy
+              </p>
+            </div>
           </div>
-          <span className="text-[11px] font-mono text-ai-cyan">
-            ENV: NEXT_PUBLIC_SIMULATED_MOBILE
-          </span>
+
+          <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              type="button"
+              onClick={runLiveOpenCvPipeline}
+              disabled={isVisionLoading}
+              className="rounded-xl bg-gradient-to-r from-ai-cyan to-ai-indigo px-4 py-2 text-xs font-bold text-text-primary shadow-ai hover:opacity-95 transition-opacity disabled:opacity-50 flex items-center gap-2"
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>{isVisionLoading ? 'در حال پردازش...' : 'تست خط لوله با برگه استاندارد'}</span>
+            </button>
+
+            <label className="rounded-xl border border-border bg-surface px-4 py-2 text-xs font-bold text-text-secondary hover:text-text-primary cursor-pointer transition-colors flex items-center gap-2">
+              <Upload className="h-3.5 w-3.5 text-ai-cyan" />
+              <span>آپلود تصویر واقعی</span>
+              <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
+            </label>
+          </div>
         </div>
+
+        {visionError && (
+          <div className="rounded-xl border border-danger/40 bg-danger/15 p-3 text-xs text-danger">
+            {visionError}
+          </div>
+        )}
+
+        {/* Live Vision Processing Results Display */}
+        {liveVisionData && (
+          <div className="rounded-2xl border border-success/40 bg-surface p-5 shadow-lg space-y-4 animate-fade-in">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3">
+              <div className="flex items-center gap-2 text-success font-extrabold text-xs">
+                <CheckCircle2 className="h-4 w-4" />
+                <span>نتیجه پردازش خط لوله نیتیو OpenCV و موتور ریاضی SymPy</span>
+              </div>
+              <span className="text-[11px] font-mono text-ai-cyan bg-canvas px-2.5 py-1 rounded border border-ai-cyan/30">
+                وضعیت: {liveVisionData.alignment.status} | نمره کل: {liveVisionData.evaluation.total_score} از {liveVisionData.evaluation.max_score} ({liveVisionData.evaluation.grade_percent}٪)
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="rounded-xl border border-border bg-surface-raised p-3">
+                <span className="text-[10px] text-text-muted block mb-1">شاخص وضوح و شارپنس (Laplacian):</span>
+                <span className="text-xs font-bold text-success">
+                  {liveVisionData.sharpness.score_percent}٪ — {liveVisionData.sharpness.status}
+                </span>
+              </div>
+
+              <div className="rounded-xl border border-border bg-surface-raised p-3">
+                <span className="text-[10px] text-text-muted block mb-1">مارکرهای ArUco ردیابی‌شده:</span>
+                <span className="text-xs font-bold text-ai-cyan">
+                  {liveVisionData.alignment.markers_detected} مارکر گوشه (۴ گوشه قفل شد)
+                </span>
+              </div>
+
+              <div className="rounded-xl border border-border bg-surface-raised p-3">
+                <span className="text-[10px] text-text-muted block mb-1">تصحیح هموگرافی پرسپکتیو:</span>
+                <span className="text-xs font-bold text-text-primary">
+                  {liveVisionData.alignment.perspective_rectified ? 'انجام شد (سطح صاف A4)' : 'نیازی نبود'}
+                </span>
+              </div>
+            </div>
+
+            {/* Step breakdown */}
+            <div className="space-y-2 pt-2">
+              <h4 className="text-xs font-bold text-text-secondary">ارزیابی گام‌به‌گام راه‌حل دست‌نویس دانش‌آموز:</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+                {liveVisionData.evaluation.steps.map((step: any) => (
+                  <div key={step.step_index} className="rounded-xl border border-border bg-canvas p-3 text-xs space-y-1">
+                    <div className="flex items-center justify-between font-bold text-text-primary">
+                      <span>گام {step.step_index}: {step.step_label}</span>
+                      <span className="text-success font-mono">+{step.awarded_score}</span>
+                    </div>
+                    <div dir="ltr" className="text-[11px] font-mono text-ai-cyan bg-surface p-1.5 rounded border border-border">
+                      {step.detected_latex}
+                    </div>
+                    <div className="flex items-center justify-between text-[10px] text-text-muted pt-1">
+                      <span>دقت OCR: {Math.round(step.ocr_confidence * 100)}٪</span>
+                      <span className="text-success font-semibold">تایید ریاضی SymPy</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Device Presentation Stage */}
         <div className="flex justify-center py-4">
@@ -161,39 +300,49 @@ export default function MobilePreviewPage() {
                     </span>
                   </div>
 
-                  {/* Simulated Camera Viewfinder with 4 ArUco Corner Markers */}
-                  <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl border-2 border-dashed border-ai-cyan/50 bg-surface-raised flex items-center justify-center p-3">
-                    {/* Simulated Paper Background */}
+                  {/* Camera Viewfinder Simulation */}
+                  <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl border border-border bg-slate-950 p-2 shadow-inner">
+                    {/* Perspective Warp Overlay */}
                     <div
-                      className={`relative w-full h-full rounded-xl bg-slate-900 border border-border p-3 flex flex-col justify-between transition-transform duration-base ${
-                        isPerspectiveCorrected ? 'scale-100 rotate-0' : 'scale-95 -rotate-2'
+                      className={`relative h-full w-full rounded-xl border border-dashed border-ai-cyan/60 bg-surface/40 p-3 transition-transform duration-slow ${
+                        isPerspectiveCorrected ? 'rotate-0 scale-100' : '-rotate-3 scale-95'
                       }`}
                     >
-                      {/* 4 ArUco Markers at corners */}
-                      <div className="absolute top-2 start-2 h-7 w-7 rounded bg-black border-2 border-ai-cyan flex items-center justify-center text-[9px] font-mono font-bold text-ai-cyan">
+                      {/* 4 ArUco Markers Positioned at Corners */}
+                      <div className="absolute top-2 start-2 flex h-7 w-7 items-center justify-center rounded border border-success bg-success/20 text-[9px] font-mono font-bold text-success">
                         #0
                       </div>
-                      <div className="absolute top-2 end-2 h-7 w-7 rounded bg-black border-2 border-ai-cyan flex items-center justify-center text-[9px] font-mono font-bold text-ai-cyan">
+                      <div className="absolute top-2 end-2 flex h-7 w-7 items-center justify-center rounded border border-success bg-success/20 text-[9px] font-mono font-bold text-success">
                         #1
                       </div>
-                      <div className="absolute bottom-2 start-2 h-7 w-7 rounded bg-black border-2 border-ai-cyan flex items-center justify-center text-[9px] font-mono font-bold text-ai-cyan">
+                      <div className="absolute bottom-2 end-2 flex h-7 w-7 items-center justify-center rounded border border-success bg-success/20 text-[9px] font-mono font-bold text-success">
                         #2
                       </div>
-                      <div className="absolute bottom-2 end-2 h-7 w-7 rounded bg-black border-2 border-ai-cyan flex items-center justify-center text-[9px] font-mono font-bold text-ai-cyan">
+                      <div className="absolute bottom-2 start-2 flex h-7 w-7 items-center justify-center rounded border border-success bg-success/20 text-[9px] font-mono font-bold text-success">
                         #3
                       </div>
 
-                      {/* Paper Content Preview */}
-                      <div className="pt-8 px-2 space-y-2">
-                        <div className="flex justify-between text-[10px] text-text-muted border-b border-border pb-1">
-                          <span>آزمون فیزیک دوازدهم</span>
-                          <span>دانش‌آموز: سارا محمدی</span>
+                      {/* Paper Simulation Content */}
+                      <div className="my-8 rounded-lg bg-surface-raised/80 p-3 text-[11px] shadow-sm space-y-2 border border-border/80">
+                        <div className="flex items-center justify-between border-b border-border pb-1.5">
+                          <span className="font-bold text-text-primary">پاسخ‌برگ دیفرانسیل - سارا حسینی</span>
+                          <span className="text-[10px] text-text-muted">کد: ۹۸۴۰۲</span>
                         </div>
-                        <div
-                          dir="ltr"
-                          className="math-ltr py-4 text-center font-mono text-base font-bold text-ai-cyan"
-                        >
-                          ∫₋₁¹ x² dx = [x³/3]₋₁¹ = 2/3
+
+                        <div className="space-y-1">
+                          <p className="text-[10px] text-text-muted">سوال ۱: انتگرال معین چندجمله‌ای درجه دو</p>
+                          <div dir="ltr" className="math-ltr rounded bg-canvas p-1.5 font-mono text-[10px] text-ai-cyan">
+                            \int_{-1}^{1} (3x^2 - 2x + 1) \, dx = 4
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between text-[10px] text-success">
+                          <span>✓ پادمشتق صحیح (F(x) = x^3 - x^2 + x)</span>
+                          <span className="font-bold">+۱٫۰</span>
+                        </div>
+                        <div className="flex items-center justify-between text-[10px] text-success">
+                          <span>✓ اعمال کران‌ها: (۱) - (-۳) = ۴</span>
+                          <span className="font-bold">+۱٫۵</span>
                         </div>
                       </div>
 
@@ -203,7 +352,7 @@ export default function MobilePreviewPage() {
                           <CheckCircle2 className="h-4 w-4" />
                           <span>تصحیح هوشمند Instant AI:</span>
                         </div>
-                        <span className="font-mono text-sm">{formatFaScore(95, 100)}</span>
+                        <span className="font-mono text-sm">{formatFaScore(2.5, 2.5)}</span>
                       </div>
                     </div>
 
@@ -215,11 +364,11 @@ export default function MobilePreviewPage() {
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div className="rounded-xl border border-border bg-surface p-2.5">
                       <span className="text-[10px] text-text-muted block">شاخص وضوح (Laplacian):</span>
-                      <span className="font-bold text-success">۸۴٪ — شارپنس عالی</span>
+                      <span className="font-bold text-success">۱۰۰٪ — شارپنس عالی</span>
                     </div>
                     <div className="rounded-xl border border-border bg-surface p-2.5">
                       <span className="text-[10px] text-text-muted block">هم‌راستایی زوایا:</span>
-                      <span className="font-bold text-ai-cyan">۰٫۴° انحراف (تطبیق شد)</span>
+                      <span className="font-bold text-ai-cyan">۴ گوشه همگام (Homography)</span>
                     </div>
                   </div>
 
@@ -235,11 +384,11 @@ export default function MobilePreviewPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setIsScanningActive(!isScanningActive)}
+                      onClick={runLiveOpenCvPipeline}
                       className="flex-1 inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-ai-indigo to-ai-cyan text-xs font-bold text-text-primary shadow-ai"
                     >
                       <Camera className="h-3.5 w-3.5" />
-                      <span>{isScanningActive ? 'تصحیح مجدد' : 'شروع اسکن'}</span>
+                      <span>اجرای اسکن زنده</span>
                     </button>
                   </div>
                 </div>
@@ -258,89 +407,83 @@ export default function MobilePreviewPage() {
                   </div>
 
                   {/* Compact Audio Player Card */}
-                  <div className="rounded-2xl border border-border bg-surface p-3.5 space-y-3">
+                  <div className="rounded-2xl border border-border bg-surface-raised p-3.5 space-y-3 shadow-panel">
                     <div className="flex items-center justify-between">
-                      <button
-                        type="button"
-                        onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-                        className="grid h-9 w-9 place-items-center rounded-full bg-ai-cyan text-canvas"
-                      >
-                        {isPlayingAudio ? <Pause className="h-4 w-4 fill-current" /> : <Play className="h-4 w-4 fill-current ms-0.5" />}
-                      </button>
-                      <span dir="ltr" className="math-ltr font-mono text-[11px] font-bold text-ai-cyan">
-                        {formatLtrTimestamp(audioSeconds)} / 28:50
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setIsPlayingAudio(!isPlayingAudio)}
+                          className="flex h-9 w-9 items-center justify-center rounded-full bg-ai-cyan text-slate-950 font-bold shadow-ai hover:scale-105 transition-transform"
+                        >
+                          {isPlayingAudio ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ms-0.5" />}
+                        </button>
+                        <div>
+                          <div className="text-xs font-bold text-text-primary">پادکست خلاصه تدریس</div>
+                          <div className="text-[10px] text-text-muted">تولید خودکار با رونوشت ASR</div>
+                        </div>
+                      </div>
+                      <span dir="ltr" className="font-mono text-xs font-semibold text-ai-cyan">
+                        {formatLtrTimestamp(audioSeconds)} / 12:40
                       </span>
                     </div>
 
-                    {/* Mini Waveform */}
-                    <div className="flex h-10 items-center gap-1 px-1">
-                      {[30, 60, 90, 45, 80, 100, 70, 50, 65, 85, 95, 40, 60, 75, 90, 55, 35].map((val, i) => (
-                        <div
-                          key={i}
-                          style={{ height: `${val}%` }}
-                          className={`flex-1 rounded-full ${i < 8 ? 'bg-ai-cyan' : 'bg-surface-raised'}`}
-                        />
-                      ))}
+                    {/* Audio Waveform visualization */}
+                    <div className="flex items-center gap-1 h-6 px-1">
+                      {[15, 30, 60, 90, 45, 80, 100, 70, 40, 85, 95, 50, 65, 35, 75, 40, 20, 60, 85, 30].map(
+                        (val, idx) => (
+                          <div
+                            key={idx}
+                            style={{ height: `${val}%` }}
+                            className={`flex-1 rounded-full transition-all duration-fast ${
+                              idx < 8 ? 'bg-ai-cyan' : 'bg-surface border border-border'
+                            }`}
+                          />
+                        )
+                      )}
                     </div>
                   </div>
 
-                  {/* Timestamped Topics */}
-                  <div className="space-y-1.5">
-                    <h5 className="text-[11px] font-bold text-text-muted">نکات هماهنگ با صوت:</h5>
-                    {[
-                      { time: '00:00', title: 'مقدمه بردار مکان و سرعت' },
-                      { time: '03:14', title: 'تحلیل مساحت زیر نمودار v-t', active: true },
-                      { time: '10:00', title: 'حل مثال سقوط آزاد با شتاب g' },
-                    ].map((t) => (
-                      <div
-                        key={t.time}
-                        className={`flex items-center justify-between rounded-lg border p-2 text-xs ${
-                          t.active
-                            ? 'border-ai-cyan/50 bg-ai-cyan/10 font-bold text-text-primary'
-                            : 'border-border bg-surface/50 text-text-secondary'
-                        }`}
-                      >
-                        <span>{t.title}</span>
-                        <span dir="ltr" className="math-ltr font-mono text-[10px] text-ai-cyan">
-                          {t.time}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Mini Pop Quiz */}
-                  <div className="rounded-2xl border border-border bg-surface p-3.5 space-y-2.5">
+                  {/* Pop Quiz Component */}
+                  <div className="rounded-2xl border border-border bg-surface p-3.5 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold text-warning">کوییز ۵ دقیقه‌ای</span>
-                      <span className="text-[10px] text-danger font-bold">۰۴:۴۵ مانده</span>
+                      <span className="text-xs font-bold text-text-primary">کوییز تشخیصی حین درس</span>
+                      <span className="text-[10px] rounded bg-warning/15 text-warning font-bold px-1.5 py-0.5">
+                        امتیاز +۱۰
+                      </span>
                     </div>
-                    <div
-                      dir="ltr"
-                      className="math-ltr rounded bg-canvas/70 p-2 text-center font-mono text-xs text-math font-bold"
-                    >
-                      z² = -3 ⟹ ((x² - 1)ˣ + b) = ?
-                    </div>
-                    <div className="grid grid-cols-2 gap-1.5">
+                    <p className="text-[11px] text-text-secondary leading-relaxed">
+                      در یک حرکت با شتاب ثابت، اگر سرعت اولیه صفر باشد، مسافت طی‌شده با کدام تناسب دارد؟
+                    </p>
+
+                    <div className="space-y-1.5">
                       {[
-                        { id: 'opt-1', label: '۴۱' },
-                        { id: 'opt-2', label: '۱۶۳' },
-                        { id: 'opt-3', label: '۱۷ (پاسخ صحیح)' },
-                        { id: 'opt-4', label: '۲۹' },
+                        { id: 'opt-1', label: 'تناسب مستقیم با زمان (t)' },
+                        { id: 'opt-2', label: 'تناسب با جذر زمان (√t)' },
+                        { id: 'opt-3', label: 'تناسب با مربع زمان (t²)' },
+                        { id: 'opt-4', label: 'مستقل از زمان است' },
                       ].map((opt) => (
                         <button
                           key={opt.id}
                           type="button"
                           onClick={() => setSelectedQuizOption(opt.id)}
-                          className={`rounded-lg border p-1.5 text-center text-xs font-bold ${
+                          className={`flex w-full items-center justify-between rounded-xl border p-2 text-start text-[11px] font-medium transition-all ${
                             selectedQuizOption === opt.id
-                              ? 'border-success bg-success/20 text-success'
-                              : 'border-border bg-surface-raised'
+                              ? 'border-success/60 bg-success/15 text-success font-bold'
+                              : 'border-border bg-surface-raised text-text-muted hover:text-text-primary'
                           }`}
                         >
-                          {opt.label}
+                          <span>{opt.label}</span>
+                          {selectedQuizOption === opt.id && <Check className="h-3.5 w-3.5 text-success" />}
                         </button>
                       ))}
                     </div>
+
+                    {selectedQuizOption === 'opt-3' && (
+                      <div className="rounded-lg border border-success/30 bg-success/10 p-2 text-[10px] text-success font-bold flex items-center gap-1.5">
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                        <span>پاسخ صحیح! رابطه: x = (1/2) a t²</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

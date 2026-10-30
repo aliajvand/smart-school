@@ -28,6 +28,245 @@
         }
       }
     },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Authentication & Roles"
+        ],
+        "summary": "Login",
+        "description": "Authenticate user by username and password, returning JWT Bearer token and role profile.",
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/purchase-license": {
+      "post": {
+        "tags": [
+          "Authentication & Roles"
+        ],
+        "summary": "Purchase License",
+        "description": "Purchase organizational license & automatically issue primary master/principal credentials.\nInstantly provisions institutional access key and master admin account.",
+        "operationId": "purchase_license_api_v1_auth_purchase_license_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PurchaseLicenseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PurchaseLicenseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": [
+          "Authentication & Roles"
+        ],
+        "summary": "Get Current User Profile",
+        "description": "Get profile of the currently authenticated user with effective permissions.",
+        "operationId": "get_current_user_profile_api_v1_auth_me_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/roles-info": {
+      "get": {
+        "tags": [
+          "Authentication & Roles"
+        ],
+        "summary": "Get Roles Info",
+        "description": "Provides catalog of all 4 distinct roles, their route permissions, and quick demo credentials.",
+        "operationId": "get_roles_info_api_v1_auth_roles_info_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RolesInfoResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vision/scan-sheet": {
+      "post": {
+        "tags": [
+          "Vision & OCR Processing"
+        ],
+        "summary": "Scan Exam Sheet",
+        "description": "Process an uploaded exam answer sheet:\n- Assesses image blur / sharpness using Laplacian variance\n- Detects 4 ArUco corner markers for alignment\n- Corrects perspective distortion via homography warp\n- Segments handwriting steps and evaluates mathematical equivalence",
+        "operationId": "scan_exam_sheet_api_v1_vision_scan_sheet_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_scan_exam_sheet_api_v1_vision_scan_sheet_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vision/synthetic-sheet": {
+      "get": {
+        "tags": [
+          "Vision & OCR Processing"
+        ],
+        "summary": "Get Synthetic Sheet",
+        "description": "Generate and return a synthetic exam sheet JPEG with 4 real ArUco markers\nand sample calculus solution for testing and demonstration.",
+        "operationId": "get_synthetic_sheet_api_v1_vision_synthetic_sheet_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vision/test-synthetic-scan": {
+      "post": {
+        "tags": [
+          "Vision & OCR Processing"
+        ],
+        "summary": "Test Synthetic Scan",
+        "description": "Instantly run the synthetic sheet through the vision pipeline\nwithout requiring manual camera upload.",
+        "operationId": "test_synthetic_scan_api_v1_vision_test_synthetic_scan_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/dashboard/teacher": {
       "get": {
         "tags": [
@@ -36,16 +275,30 @@
         "summary": "Get Teacher Dashboard",
         "description": "Teacher-scoped dashboard: returns class-level metrics and review queues.",
         "operationId": "get_teacher_dashboard_api_v1_dashboard_teacher_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "X-Demo-Role",
             "in": "header",
             "required": false,
             "schema": {
-              "type": "string",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Role simulation header for backwards compatibility",
               "default": "teacher",
               "title": "X-Demo-Role"
-            }
+            },
+            "description": "Role simulation header for backwards compatibility"
           }
         ],
         "responses": {
@@ -80,16 +333,30 @@
         "summary": "Get Principal Dashboard",
         "description": "Principal-scoped dashboard: school-wide aggregate KPIs and analytics.",
         "operationId": "get_principal_dashboard_api_v1_dashboard_principal_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "X-Demo-Role",
             "in": "header",
             "required": false,
             "schema": {
-              "type": "string",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Role simulation header for backwards compatibility",
               "default": "teacher",
               "title": "X-Demo-Role"
-            }
+            },
+            "description": "Role simulation header for backwards compatibility"
           }
         ],
         "responses": {
@@ -124,16 +391,30 @@
         "summary": "Get Student Dashboard",
         "description": "Student dashboard: individual performance, Taraz interval, and study progress.",
         "operationId": "get_student_dashboard_api_v1_dashboard_student_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "X-Demo-Role",
             "in": "header",
             "required": false,
             "schema": {
-              "type": "string",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Role simulation header for backwards compatibility",
               "default": "teacher",
               "title": "X-Demo-Role"
-            }
+            },
+            "description": "Role simulation header for backwards compatibility"
           }
         ],
         "responses": {
@@ -168,16 +449,30 @@
         "summary": "Get Counselor Overview",
         "description": "Returns counselor EWS portal overview metrics and SHAP feature attribution.\nGated behind counselor/principal RBAC.",
         "operationId": "get_counselor_overview_api_v1_counselor_overview_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "X-Demo-Role",
             "in": "header",
             "required": false,
             "schema": {
-              "type": "string",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Role simulation header for backwards compatibility",
               "default": "teacher",
               "title": "X-Demo-Role"
-            }
+            },
+            "description": "Role simulation header for backwards compatibility"
           }
         ],
         "responses": {
@@ -212,16 +507,30 @@
         "summary": "Get At Risk Students",
         "description": "Returns prioritized at-risk student queue.",
         "operationId": "get_at_risk_students_api_v1_counselor_students_at_risk_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "X-Demo-Role",
             "in": "header",
             "required": false,
             "schema": {
-              "type": "string",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Role simulation header for backwards compatibility",
               "default": "teacher",
               "title": "X-Demo-Role"
-            }
+            },
+            "description": "Role simulation header for backwards compatibility"
           }
         ],
         "responses": {
@@ -260,16 +569,30 @@
         "summary": "Approve Human Outreach",
         "description": "Human-in-the-loop approval gate: logs the counselor's explicit sign-off.\nNever sends automated messages without human confirmation.",
         "operationId": "approve_human_outreach_api_v1_counselor_outreach_approve_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "X-Demo-Role",
             "in": "header",
             "required": false,
             "schema": {
-              "type": "string",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Role simulation header for backwards compatibility",
               "default": "teacher",
               "title": "X-Demo-Role"
-            }
+            },
+            "description": "Role simulation header for backwards compatibility"
           }
         ],
         "requestBody": {
@@ -312,16 +635,30 @@
         "summary": "Validate Question",
         "description": "Validates a parametric mathematical template against safe subset and symbolic constraints.\nRejects unsafe python patterns, attribute access, and unknown symbols.",
         "operationId": "validate_question_api_v1_studio_questions_validate_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "X-Demo-Role",
             "in": "header",
             "required": false,
             "schema": {
-              "type": "string",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Role simulation header for backwards compatibility",
               "default": "teacher",
               "title": "X-Demo-Role"
-            }
+            },
+            "description": "Role simulation header for backwards compatibility"
           }
         ],
         "requestBody": {
@@ -366,16 +703,30 @@
         "summary": "Generate Variants",
         "description": "Generates N deterministic, symbolically verified question variants with answer keys.",
         "operationId": "generate_variants_api_v1_studio_questions_generate_variants_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "X-Demo-Role",
             "in": "header",
             "required": false,
             "schema": {
-              "type": "string",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Role simulation header for backwards compatibility",
               "default": "teacher",
               "title": "X-Demo-Role"
-            }
+            },
+            "description": "Role simulation header for backwards compatibility"
           }
         ],
         "requestBody": {
@@ -420,16 +771,30 @@
         "summary": "Get Integrity Signals",
         "description": "Returns graph similarity radar nodes and edges with distinct stroke pattern hints.\nAlways includes the mandatory non-verdict disclaimer.",
         "operationId": "get_integrity_signals_api_v1_integrity_signals_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "X-Demo-Role",
             "in": "header",
             "required": false,
             "schema": {
-              "type": "string",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Role simulation header for backwards compatibility",
               "default": "teacher",
               "title": "X-Demo-Role"
-            }
+            },
+            "description": "Role simulation header for backwards compatibility"
           }
         ],
         "responses": {
@@ -464,6 +829,11 @@
         "summary": "Get Assessment Clusters",
         "description": "Returns AST isomorphic answer clusters for batch grading.",
         "operationId": "get_assessment_clusters_api_v1_assessments__assessment_id__clusters_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "assessment_id",
@@ -479,10 +849,19 @@
             "in": "header",
             "required": false,
             "schema": {
-              "type": "string",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Role simulation header for backwards compatibility",
               "default": "teacher",
               "title": "X-Demo-Role"
-            }
+            },
+            "description": "Role simulation header for backwards compatibility"
           }
         ],
         "responses": {
@@ -521,6 +900,11 @@
         "summary": "Apply Batch Score",
         "description": "Applies score to all students within a cluster and logs an audit record.",
         "operationId": "apply_batch_score_api_v1_assessments__assessment_id__clusters_batch_score_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "assessment_id",
@@ -536,10 +920,19 @@
             "in": "header",
             "required": false,
             "schema": {
-              "type": "string",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Role simulation header for backwards compatibility",
               "default": "teacher",
               "title": "X-Demo-Role"
-            }
+            },
+            "description": "Role simulation header for backwards compatibility"
           }
         ],
         "requestBody": {
@@ -625,6 +1018,11 @@
         "summary": "Get Regrade Details",
         "description": "Returns state machine progression steps for a regrade appeal.",
         "operationId": "get_regrade_details_api_v1_regrades__ticket_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "ticket_id",
@@ -640,10 +1038,19 @@
             "in": "header",
             "required": false,
             "schema": {
-              "type": "string",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Role simulation header for backwards compatibility",
               "default": "teacher",
               "title": "X-Demo-Role"
-            }
+            },
+            "description": "Role simulation header for backwards compatibility"
           }
         ],
         "responses": {
@@ -678,16 +1085,30 @@
         "summary": "Submit Regrade Request",
         "description": "Submits a student appeal for exam regrading. Transitions state machine to 'teacher_review'.\nLogs audit record.",
         "operationId": "submit_regrade_request_api_v1_regrades_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "X-Demo-Role",
             "in": "header",
             "required": false,
             "schema": {
-              "type": "string",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Role simulation header for backwards compatibility",
               "default": "teacher",
               "title": "X-Demo-Role"
-            }
+            },
+            "description": "Role simulation header for backwards compatibility"
           }
         ],
         "requestBody": {
@@ -732,6 +1153,11 @@
         "summary": "List Audit Logs",
         "description": "Returns recent system audit events (restricted strictly to counselor and principal roles).",
         "operationId": "list_audit_logs_api_v1_audit_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "limit",
@@ -748,10 +1174,19 @@
             "in": "header",
             "required": false,
             "schema": {
-              "type": "string",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Role simulation header for backwards compatibility",
               "default": "teacher",
               "title": "X-Demo-Role"
-            }
+            },
+            "description": "Role simulation header for backwards compatibility"
           }
         ],
         "responses": {
@@ -1094,6 +1529,20 @@
         ],
         "title": "BatchScoreRequest"
       },
+      "Body_scan_exam_sheet_api_v1_vision_scan_sheet_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_scan_exam_sheet_api_v1_vision_scan_sheet_post"
+      },
       "CounselorOverviewResponse": {
         "properties": {
           "metrics": {
@@ -1348,6 +1797,39 @@
         ],
         "title": "IntegritySignalsResponse"
       },
+      "IssuedCredentials": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role",
+            "default": "principal"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password",
+          "full_name",
+          "note"
+        ],
+        "title": "IssuedCredentials"
+      },
       "KpiMetricItem": {
         "properties": {
           "title": {
@@ -1409,6 +1891,48 @@
           "spark_points"
         ],
         "title": "KpiMetricItem"
+      },
+      "LoginRequest": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "Username",
+            "description": "نام کاربری"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password",
+            "description": "رمز عبور"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "LoginRequest"
+      },
+      "LoginResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "user"
+        ],
+        "title": "LoginResponse"
       },
       "OutreachApprovalRequest": {
         "properties": {
@@ -1579,6 +2103,88 @@
           "school_avg"
         ],
         "title": "ProgressSeriesPoint"
+      },
+      "PurchaseLicenseRequest": {
+        "properties": {
+          "organization_name": {
+            "type": "string",
+            "minLength": 3,
+            "title": "Organization Name",
+            "description": "نام مدرسه یا موسسه آموزشی"
+          },
+          "package_type": {
+            "type": "string",
+            "title": "Package Type",
+            "description": "نوع پلن اشتراک",
+            "default": "GOLD_INSTITUTIONAL"
+          },
+          "max_seats": {
+            "type": "integer",
+            "title": "Max Seats",
+            "description": "تعداد کل ظرفیت دانش‌آموزان و دبیران",
+            "default": 500
+          },
+          "contact_email": {
+            "type": "string",
+            "title": "Contact Email",
+            "description": "ایمیل مسئول یا مدیر مدرسه"
+          },
+          "contact_phone": {
+            "type": "string",
+            "title": "Contact Phone",
+            "description": "شماره تماس جهت پشتیبانی و تایید"
+          },
+          "admin_full_name": {
+            "type": "string",
+            "title": "Admin Full Name",
+            "description": "نام و نام خانوادگی مدیر یا نماینده"
+          }
+        },
+        "type": "object",
+        "required": [
+          "organization_name",
+          "contact_email",
+          "contact_phone",
+          "admin_full_name"
+        ],
+        "title": "PurchaseLicenseRequest"
+      },
+      "PurchaseLicenseResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "license_key": {
+            "type": "string",
+            "title": "License Key"
+          },
+          "organization_name": {
+            "type": "string",
+            "title": "Organization Name"
+          },
+          "max_seats": {
+            "type": "integer",
+            "title": "Max Seats"
+          },
+          "credentials": {
+            "$ref": "#/components/schemas/IssuedCredentials"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "message",
+          "license_key",
+          "organization_name",
+          "max_seats",
+          "credentials"
+        ],
+        "title": "PurchaseLicenseResponse"
       },
       "QuestionValidationRequest": {
         "properties": {
@@ -1850,6 +2456,71 @@
         ],
         "title": "RegradeSubmissionResponse"
       },
+      "RoleDetail": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "title_fa": {
+            "type": "string",
+            "title": "Title Fa"
+          },
+          "description_fa": {
+            "type": "string",
+            "title": "Description Fa"
+          },
+          "allowed_routes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Routes"
+          },
+          "capabilities": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Capabilities"
+          },
+          "demo_username": {
+            "type": "string",
+            "title": "Demo Username"
+          },
+          "demo_password": {
+            "type": "string",
+            "title": "Demo Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "title_fa",
+          "description_fa",
+          "allowed_routes",
+          "capabilities",
+          "demo_username",
+          "demo_password"
+        ],
+        "title": "RoleDetail"
+      },
+      "RolesInfoResponse": {
+        "properties": {
+          "roles": {
+            "items": {
+              "$ref": "#/components/schemas/RoleDetail"
+            },
+            "type": "array",
+            "title": "Roles"
+          }
+        },
+        "type": "object",
+        "required": [
+          "roles"
+        ],
+        "title": "RolesInfoResponse"
+      },
       "ShapFeatureItem": {
         "properties": {
           "feature_key": {
@@ -2038,6 +2709,39 @@
         ],
         "title": "TeacherDashboardResponse"
       },
+      "UserOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "full_name",
+          "role",
+          "is_active"
+        ],
+        "title": "UserOut"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -2113,6 +2817,17 @@
           "is_valid"
         ],
         "title": "VariantItemSchema"
+      }
+    },
+    "securitySchemes": {
+      "OAuth2PasswordBearer": {
+        "type": "oauth2",
+        "flows": {
+          "password": {
+            "scopes": {},
+            "tokenUrl": "/api/v1/auth/login"
+          }
+        }
       }
     }
   }

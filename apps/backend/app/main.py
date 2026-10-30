@@ -1,12 +1,23 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 
 from app.core.config import settings
+from app.db.init_db import init_db
 from app.api.v1.api import api_router
 from app.api.v1.endpoints.health import router as health_router
 from app.schemas.common import ErrorResponse
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Initialize DB tables and seed the 4 roles on startup
+    try:
+        init_db()
+    except Exception as e:
+        print(f"Warning: init_db encountered an issue: {e}")
+    yield
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -15,6 +26,7 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     docs_url=f"{settings.API_V1_STR}/docs",
     redoc_url=f"{settings.API_V1_STR}/redoc",
+    lifespan=lifespan,
 )
 
 # CORS Middleware
@@ -52,5 +64,5 @@ def root():
         "version": settings.VERSION,
         "docs": f"{settings.API_V1_STR}/docs",
         "openapi": f"{settings.API_V1_STR}/openapi.json",
-        "auth_model": "DEMO_AUTH (use X-Demo-Role header: teacher | principal | counselor | student)",
+        "auth_model": "JWT Bearer + 4-Role RBAC (student, teacher, counselor, principal) with X-Demo-Role fallback",
     }
