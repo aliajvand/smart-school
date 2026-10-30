@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, Field
 
 class RegradeSubmissionRequest(BaseModel):
@@ -15,3 +15,19 @@ class RegradeSubmissionResponse(BaseModel):
     assigned_reviewer: str
     submission_timestamp: str
     message: str = "درخواست بازبینی با موفقیت ثبت شد و به کارتابل دبیر ارسال گردید."
+
+class RegradeStepItem(BaseModel):
+    id: str
+    label: str
+    role_description: str
+    status: str  # 'completed' | 'active' | 'pending'
+    timestamp: Optional[str] = None
+    assignee: Optional[str] = None
+    notes: Optional[str] = None
+
+class RegradeDetailResponse(BaseModel):
+    ticket_id: str
+    student_id: str
+    assessment_id: str
+    current_stage: str
+    steps: List[RegradeStepItem]

@@ -617,6 +617,59 @@
         }
       }
     },
+    "/api/v1/regrades/{ticket_id}": {
+      "get": {
+        "tags": [
+          "Regrades"
+        ],
+        "summary": "Get Regrade Details",
+        "description": "Returns state machine progression steps for a regrade appeal.",
+        "operationId": "get_regrade_details_api_v1_regrades__ticket_id__get",
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ticket Id"
+            }
+          },
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "teacher",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegradeDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/regrades": {
       "post": {
         "tags": [
@@ -1621,6 +1674,103 @@
           "icon_type"
         ],
         "title": "RecentActivityItem"
+      },
+      "RegradeDetailResponse": {
+        "properties": {
+          "ticket_id": {
+            "type": "string",
+            "title": "Ticket Id"
+          },
+          "student_id": {
+            "type": "string",
+            "title": "Student Id"
+          },
+          "assessment_id": {
+            "type": "string",
+            "title": "Assessment Id"
+          },
+          "current_stage": {
+            "type": "string",
+            "title": "Current Stage"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/RegradeStepItem"
+            },
+            "type": "array",
+            "title": "Steps"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticket_id",
+          "student_id",
+          "assessment_id",
+          "current_stage",
+          "steps"
+        ],
+        "title": "RegradeDetailResponse"
+      },
+      "RegradeStepItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "role_description": {
+            "type": "string",
+            "title": "Role Description"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "timestamp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timestamp"
+          },
+          "assignee": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assignee"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "role_description",
+          "status"
+        ],
+        "title": "RegradeStepItem"
       },
       "RegradeSubmissionRequest": {
         "properties": {

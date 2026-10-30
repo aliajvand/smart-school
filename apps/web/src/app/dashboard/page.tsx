@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppShell } from '@/components/layout/AppShell';
+import { useBackendStatus } from '@/hooks/useBackendStatus';
+import { getTeacherDashboard } from '@/lib/api-client';
 import { KPIMetricSparkCard } from '@/components/agentic/KPIMetricSparkCard';
 import { StudentProgressAreaChart } from '@/components/agentic/StudentProgressAreaChart';
 import { AIAssistantBentoCard } from '@/components/agentic/AIAssistantBentoCard';
@@ -22,11 +24,28 @@ import {
 } from '@/data/mock-platform-data';
 
 export default function DashboardPage() {
+  const { apiStatus } = useBackendStatus();
   const [scope, setScope] = useState<'teacher' | 'principal'>('teacher');
-  const metrics = scope === 'teacher' ? TEACHER_KPI_METRICS : PRINCIPAL_KPI_METRICS;
+  const [liveTeacherMetrics, setLiveTeacherMetrics] = useState<typeof TEACHER_KPI_METRICS | null>(null);
+
+  useEffect(() => {
+    if (apiStatus === 'connected') {
+      getTeacherDashboard().then((res) => {
+        if (!res.isMock && res.metrics.length > 0) {
+          setLiveTeacherMetrics(res.metrics);
+        }
+      }).catch(() => {
+        // Fallback already handled
+      });
+    }
+  }, [apiStatus]);
+
+  const metrics = scope === 'teacher'
+    ? (liveTeacherMetrics || TEACHER_KPI_METRICS)
+    : PRINCIPAL_KPI_METRICS;
 
   return (
-    <AppShell>
+    <AppShell apiStatus={apiStatus}>
       <div className="space-y-6">
         {/* Row 1: 4 KPI Cards */}
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
