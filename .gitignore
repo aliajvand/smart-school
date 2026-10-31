@@ -62,3 +62,19 @@ Thumbs.db
 
 # TypeScript build info
 tsconfig.tsbuildinfo
+
+# Dataset raw compressed archives
+*.tar.gz
+*.zip
+*.tar.bz2
+
+# Large CSV annotations
+data/**/*.csv
+
+# Raw downloaded handwriting datasets (kept locally for testing)
+data/vision_test_suite/real_handwriting/
+
+# Generated test images
+data/**/*.jpg
+data/**/*.png
+data/**/*.bmp
